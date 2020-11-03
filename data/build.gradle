@@ -1,2 +1,10 @@
-dependencies {
+android {
+    buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"" + getProperty("app.api.base.url") + "\"")
+            buildConfigField("String", "SECRET_KEY", "\"" + getProperty("app.api.secret.key") + "\"")
+            buildConfigField("String", "ACCESS_KEY", "\"" + getProperty("app.api.access.key") + "\"")
+        }
+
+    }
 }
