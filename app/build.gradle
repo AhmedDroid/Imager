@@ -1,0 +1,10 @@
+android {
+
+    defaultConfig {
+        applicationId "com.ahmedroid.imager"
+    }
+}
+
+dependencies {
+    implementation project(":UI")
+}

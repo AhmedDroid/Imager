@@ -1,0 +1,4 @@
+include ':UI'
+include ':data'
+include ':app'
+rootProject.name = "Imager"
