@@ -2,14 +2,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ahmedroid.imager">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".Imager"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".Imager"
         android:theme="@style/AppTheme">
+        <activity
+            android:label="@string/image_browser_title"
+            android:name="com.ahmedroid.ui.viewer.ImageViewerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ahmedroid.ui.main.ImageBrowserActivity"
+            android:label="@string/image_browser_title"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

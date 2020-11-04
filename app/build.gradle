@@ -6,6 +6,7 @@ android {
 }
 
 dependencies {
+    implementation project(":core")
+    implementation project(":customviews")
     implementation project(":UI")
-    implementation project(":data")
 }
