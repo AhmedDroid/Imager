@@ -4,5 +4,5 @@ import network.Resource
 
 interface PhotosRepo {
 
-    suspend fun getPhotos(): Resource
+    suspend fun getPhotosWithPage(number: Int): Resource
 }

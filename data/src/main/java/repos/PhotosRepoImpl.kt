@@ -7,8 +7,8 @@ class PhotosRepoImpl(
     private val photosService: PhotosService
 ) : PhotosRepo {
 
-    override suspend fun getPhotos(): Resource {
-        val response = photosService.getPhotos()
+    override suspend fun getPhotosWithPage(number: Int): Resource {
+        val response = photosService.getPhotosWithPage(number)
         return if (response.isSuccessful) {
             Resource.Success(response.body())
         } else {
