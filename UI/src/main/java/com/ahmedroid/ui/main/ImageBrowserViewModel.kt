@@ -1,11 +1,20 @@
 package com.ahmedroid.ui.main
 
-import android.app.Application
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
+import network.Resource
+import repos.PhotosRepo
 
 class ImageBrowserViewModel @ViewModelInject constructor(
-    private val app: Application
-): AndroidViewModel(app) {
+    private val photosRepo: PhotosRepo
+): ViewModel() {
 
+    fun loadPhotos() = liveData {
+        emit(Resource.Loading(show = true))
+
+        val t = photosRepo.getPhotos()
+        emit(t)
+        emit(Resource.Loading(show = false))
+    }
 }
