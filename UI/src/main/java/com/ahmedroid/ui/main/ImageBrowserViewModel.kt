@@ -3,13 +3,10 @@ package com.ahmedroid.ui.main
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import dagger.hilt.android.scopes.ActivityScoped
 import entities.Photo
 import network.Resource
 import repos.PhotosRepo
 import utils.NetworkHelper
-import java.lang.Error
-import javax.inject.Inject
 
 class ImageBrowserViewModel @ViewModelInject constructor(
     private val photosRepo: PhotosRepo,
