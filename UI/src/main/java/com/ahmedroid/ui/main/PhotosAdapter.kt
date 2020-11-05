@@ -30,8 +30,8 @@ class PhotosAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is GridViewHolder -> holder.bind(viewModel.photosList[holder.layoutPosition])
-            is ListViewHolder -> holder.bind(viewModel.photosList[holder.layoutPosition])
+            is GridViewHolder -> holder.bind(viewModel.photosList[holder.adapterPosition])
+            is ListViewHolder -> holder.bind(viewModel.photosList[holder.adapterPosition])
         }
     }
 

@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
+import android.widget.EditText
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.view_search.view.*
 
@@ -14,10 +15,12 @@ class SearchView(
     attrs: AttributeSet
 ) : FrameLayout(context, attrs) {
 
+    var searchEditText: EditText? = null
     init {
         LayoutInflater.from(context)
             .inflate(R.layout.view_search, this, true)
 
+        searchEditText = findViewById(R.id.search_input_text)
         open_search_button.setOnClickListener { openSearch() }
         close_search_button.setOnClickListener { closeSearch() }
     }

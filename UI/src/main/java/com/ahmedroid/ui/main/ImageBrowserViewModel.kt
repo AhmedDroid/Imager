@@ -15,6 +15,7 @@ class ImageBrowserViewModel @ViewModelInject constructor(
 
     var pageNumber = 0
     var isGrid = true
+    var searchTerm = ""
     var photosList: MutableList<Photo> = mutableListOf()
 
     fun loadPhotos() = liveData {
@@ -27,9 +28,33 @@ class ImageBrowserViewModel @ViewModelInject constructor(
         emit(Resource.Loading(show = false))
     }
 
+    fun searchPhotos() = liveData {
+        emit(Resource.Loading(show = true))
+
+        removeCurrentItems()
+
+        emit(fetchPhotos())
+
+        incrementPageNumber()
+
+        emit(Resource.Loading(show = false))
+    }
+
+    fun loadMoreSearchPhotos() = liveData {
+        emit(Resource.Loading(show = true))
+
+        emit(fetchPhotos())
+
+        incrementPageNumber()
+
+        emit(Resource.Loading(show = false))
+    }
+
+
+
     private suspend fun fetchPhotos(): Resource<List<Photo>> {
         return if (networkHelper.isNetworkConnected()) {
-            val photosResult = photosRepo.getPhotosWithPage(pageNumber)
+            val photosResult = photosRepo.getPhotosWith(searchTerm, pageNumber)
             if (photosResult is Resource.Success<List<Photo>>) {
                 photosList.addAll(photosResult.data?.toMutableList() ?: mutableListOf())
             }

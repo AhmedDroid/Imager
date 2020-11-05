@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import entities.Photo
 import kotlinx.android.synthetic.main.activity_image_broswer.*
 import network.Resource
+import utils.onDebounceQueryTextChange
 
 @AndroidEntryPoint
 class ImageBrowserActivity : AppCompatActivity(), Paginate.Callbacks {
@@ -22,6 +23,7 @@ class ImageBrowserActivity : AppCompatActivity(), Paginate.Callbacks {
     private val imageBrowserViewModel: ImageBrowserViewModel by viewModels()
     private var photosAdapter: PhotosAdapter? = null
     private var isLoading: Boolean = true
+    private var isSearchMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,10 +76,32 @@ class ImageBrowserActivity : AppCompatActivity(), Paginate.Callbacks {
             .setLoadingTriggerThreshold(2)
             .addLoadingListItem(false)
             .build()
+
+        activity_image_browser_refreshLayout.setOnRefreshListener {
+            imageBrowserViewModel.refreshPhotos().observe(this, ::handlePhotosResource)
+        }
+
+        activity_image_browser_searchView.searchEditText?.onDebounceQueryTextChange {
+            runOnUiThread {
+                imageBrowserViewModel.searchTerm = it
+                isSearchMode = it.isNotBlank()
+                if (isSearchMode) {
+                    searchPhotos()
+                }
+            }
+        }
     }
 
     private fun loadPhotos() {
         imageBrowserViewModel.loadPhotos().observe(this, ::handlePhotosResource)
+    }
+
+    private fun searchPhotos() {
+        imageBrowserViewModel.searchPhotos().observe(this, ::handlePhotosResource)
+    }
+
+    private fun loadMoreSearchPhotos() {
+        imageBrowserViewModel.loadMoreSearchPhotos().observe(this, ::handlePhotosResource)
     }
 
     private fun handlePhotosResource(resource: Resource<List<Photo>>) {
@@ -108,7 +132,11 @@ class ImageBrowserActivity : AppCompatActivity(), Paginate.Callbacks {
     }
 
     override fun onLoadMore() {
-        loadPhotos()
+        if (isSearchMode) {
+            loadMoreSearchPhotos()
+        } else {
+            loadPhotos()
+        }
     }
 
     override fun isLoading(): Boolean {
