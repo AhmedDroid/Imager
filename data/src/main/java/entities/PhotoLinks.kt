@@ -6,6 +6,9 @@ data class PhotoLinks(
     @SerializedName(value = "full")
     val fullPhotoUrl: String? = null,
 
+    @SerializedName(value = "small")
+    val smallPhotoUrl: String? = null,
+
     @SerializedName(value = "thumb")
     val thumbPhotoUrl: String? = null
 )

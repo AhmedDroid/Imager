@@ -3,17 +3,21 @@ package com.ahmedroid.ui.main
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import dagger.hilt.android.scopes.ActivityScoped
 import entities.Photo
 import network.Resource
 import repos.PhotosRepo
+import utils.NetworkHelper
+import java.lang.Error
+import javax.inject.Inject
 
-@Suppress("UNCHECKED_CAST")
 class ImageBrowserViewModel @ViewModelInject constructor(
-    private val photosRepo: PhotosRepo
-): ViewModel() {
+    private val photosRepo: PhotosRepo,
+    private val networkHelper: NetworkHelper
+) : ViewModel() {
 
     var pageNumber = 0
-    var photosList : List<Photo> = listOf()
+    var photosList: List<Photo> = listOf()
 
     fun loadPhotos() = liveData {
         emit(Resource.Loading(show = true))
@@ -25,13 +29,16 @@ class ImageBrowserViewModel @ViewModelInject constructor(
         emit(Resource.Loading(show = false))
     }
 
-    private suspend fun fetchPhotos() : Resource {
-        val photosResult = photosRepo.getPhotosWithPage(pageNumber)
-        if (photosResult is Resource.Success<*>) {
-            photosList = photosResult.data as? List<Photo> ?: listOf()
+    private suspend fun fetchPhotos(): Resource<List<Photo>> {
+        return if (networkHelper.isNetworkConnected()) {
+            val photosResult = photosRepo.getPhotosWithPage(pageNumber)
+            if (photosResult is Resource.Success<List<Photo>>) {
+                photosList = photosResult.data ?: listOf()
+            }
+            photosResult
+        } else {
+            Resource.Error(0, "No Internet Connection")
         }
-
-        return photosResult
     }
 
     private fun incrementPageNumber() {

@@ -16,10 +16,28 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.ahmedroid.customviews.SearchView
-            android:id="@+id/searchView"
+            android:id="@+id/activity_image_browser_searchView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
     </androidx.appcompat.widget.Toolbar>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activity_image_browser_toolbar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/activity_image_browser_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="3"
+            tools:listitem="@layout/activity_image_broswer" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
