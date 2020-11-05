@@ -17,6 +17,7 @@ class ImageBrowserViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     var pageNumber = 0
+    var isGrid = true
     var photosList: List<Photo> = listOf()
 
     fun loadPhotos() = liveData {
