@@ -15,7 +15,7 @@ class ImageBrowserViewModel @ViewModelInject constructor(
 
     var pageNumber = 0
     var isGrid = true
-    var photosList: List<Photo> = listOf()
+    var photosList: MutableList<Photo> = mutableListOf()
 
     fun loadPhotos() = liveData {
         emit(Resource.Loading(show = true))
@@ -31,7 +31,7 @@ class ImageBrowserViewModel @ViewModelInject constructor(
         return if (networkHelper.isNetworkConnected()) {
             val photosResult = photosRepo.getPhotosWithPage(pageNumber)
             if (photosResult is Resource.Success<List<Photo>>) {
-                photosList = photosResult.data ?: listOf()
+                photosList.addAll(photosResult.data?.toMutableList() ?: mutableListOf())
             }
             photosResult
         } else {
@@ -48,6 +48,8 @@ class ImageBrowserViewModel @ViewModelInject constructor(
 
         resetPageNumber()
 
+        removeCurrentItems()
+
         emit(fetchPhotos())
 
         incrementPageNumber()
@@ -55,7 +57,13 @@ class ImageBrowserViewModel @ViewModelInject constructor(
         emit(Resource.Loading(show = false))
     }
 
+    private fun removeCurrentItems() {
+        photosList.clear()
+    }
+
     private fun resetPageNumber() {
         pageNumber = 0
     }
+
+    fun photosCount(): Int = photosList.size
 }

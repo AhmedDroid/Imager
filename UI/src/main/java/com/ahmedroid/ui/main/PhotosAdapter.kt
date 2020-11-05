@@ -11,11 +11,9 @@ import entities.Photo
 
 class PhotosAdapter(
     private val layoutManager: GridLayoutManager,
-    private val onItemClickListener: (view: ImageView, pos: Int) -> Unit,
-    private val onLoadMoreListener: (pos: Int) -> Unit
+    private val viewModel: ImageBrowserViewModel,
+    private val onItemClickListener: (view: ImageView, pos: Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private var photos: List<Photo> = listOf()
 
     enum class ViewType {
         LIST,
@@ -32,30 +30,24 @@ class PhotosAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is GridViewHolder -> holder.bind(photos[holder.layoutPosition])
-            is ListViewHolder -> holder.bind(photos[holder.layoutPosition])
+            is GridViewHolder -> holder.bind(viewModel.photosList[holder.layoutPosition])
+            is ListViewHolder -> holder.bind(viewModel.photosList[holder.layoutPosition])
         }
     }
 
-    override fun getItemCount(): Int = photos.size
+    override fun getItemCount(): Int = viewModel.photosCount()
 
     override fun getItemViewType(position: Int): Int {
         return if (layoutManager.spanCount > 1) ViewType.GRID.ordinal
         else ViewType.LIST.ordinal
     }
 
-    fun addItems(photoItems: List<Photo>) {
-        photos = photoItems
-        notifyDataSetChanged()
-    }
-
     inner class GridViewHolder(val binding: PhotoItemGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Photo) {
             this.binding.root.setOnClickListener {
-                onItemClickListener.invoke(binding.photoItemImageView, layoutPosition)
+                onItemClickListener.invoke(binding.photoItemImageView, adapterPosition)
             }
-            onLoadMoreListener(adapterPosition)
             binding.photo = item
             binding.executePendingBindings()
         }
@@ -65,9 +57,8 @@ class PhotosAdapter(
 
         fun bind(item: Photo) {
             this.binding.root.setOnClickListener {
-                onItemClickListener.invoke(binding.photoItemImageView, layoutPosition)
+                onItemClickListener.invoke(binding.photoItemImageView, adapterPosition)
             }
-            onLoadMoreListener(adapterPosition)
             binding.photo = item
             binding.executePendingBindings()
         }

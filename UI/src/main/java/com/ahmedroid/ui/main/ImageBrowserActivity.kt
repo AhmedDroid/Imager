@@ -2,32 +2,33 @@ package com.ahmedroid.ui.main
 
 import android.app.ActivityOptions
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ahmedroid.ui.R
 import com.ahmedroid.ui.viewer.ImageViewerActivity
 import com.google.android.material.snackbar.Snackbar
+import com.paginate.Paginate
 import dagger.hilt.android.AndroidEntryPoint
 import entities.Photo
 import kotlinx.android.synthetic.main.activity_image_broswer.*
 import network.Resource
 
 @AndroidEntryPoint
-class ImageBrowserActivity : AppCompatActivity() {
+class ImageBrowserActivity : AppCompatActivity(), Paginate.Callbacks {
 
     private val imageBrowserViewModel: ImageBrowserViewModel by viewModels()
-
     private var photosAdapter: PhotosAdapter? = null
+    private var isLoading: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_broswer)
         setSupportActionBar(activity_image_browser_toolbar)
-        loadPhotos()
         initViews()
+        loadPhotos()
     }
 
     private fun initViews() {
@@ -50,8 +51,11 @@ class ImageBrowserActivity : AppCompatActivity() {
             photosAdapter?.notifyItemRangeChanged(0, photosAdapter?.itemCount ?: 0)
         }
 
-        photosAdapter = PhotosAdapter(activity_image_browser_recyclerView.layoutManager as GridLayoutManager, { view,
-                                                                                                                pos ->
+        photosAdapter = PhotosAdapter(
+            activity_image_browser_recyclerView.layoutManager as GridLayoutManager,
+            imageBrowserViewModel
+        )
+        { view, pos ->
             val intent = Intent(this, ImageViewerActivity::class.java)
             intent.putExtra(
                 ImageViewerActivity.EXTRA_FULL_IMAGE_URL,
@@ -62,11 +66,14 @@ class ImageBrowserActivity : AppCompatActivity() {
                 .makeSceneTransitionAnimation(this, view, getString(R.string.image_view_transition))
 
             startActivity(intent, options.toBundle())
-        }, {
-            if (it >= imageBrowserViewModel.photosList.size / 2) {
-//                imageBrowserViewModel.loadPhotos()
-            }
-        })
+        }
+
+        activity_image_browser_recyclerView.adapter = photosAdapter
+
+        Paginate.with(activity_image_browser_recyclerView, this)
+            .setLoadingTriggerThreshold(2)
+            .addLoadingListItem(false)
+            .build()
     }
 
     private fun loadPhotos() {
@@ -76,6 +83,7 @@ class ImageBrowserActivity : AppCompatActivity() {
     private fun handlePhotosResource(resource: Resource<List<Photo>>) {
         when (resource) {
             is Resource.Loading -> {
+                isLoading = resource.show
                 showLoading(resource.show)
             }
             is Resource.Success<List<Photo>> -> {
@@ -96,7 +104,18 @@ class ImageBrowserActivity : AppCompatActivity() {
     }
 
     private fun showPhotos(photos: List<Photo>) {
-        photosAdapter?.addItems(photos)
-        activity_image_browser_recyclerView.adapter = photosAdapter
+        photosAdapter?.notifyDataSetChanged()
+    }
+
+    override fun onLoadMore() {
+        loadPhotos()
+    }
+
+    override fun isLoading(): Boolean {
+        return isLoading
+    }
+
+    override fun hasLoadedAllItems(): Boolean {
+        return false
     }
 }
