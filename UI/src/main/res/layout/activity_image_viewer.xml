@@ -6,4 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".viewer.ImageViewerActivity">
 
+    <com.github.chrisbanes.photoview.PhotoView
+        android:transitionName="@string/image_view_transition"
+        android:id="@+id/activity_image_viewer_photoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

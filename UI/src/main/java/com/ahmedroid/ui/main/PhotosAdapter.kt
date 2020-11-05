@@ -3,18 +3,20 @@ package com.ahmedroid.ui.main
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import android.widget.ImageView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ahmedroid.ui.R
 import com.ahmedroid.ui.databinding.PhotoItemGridBinding
 import com.ahmedroid.ui.databinding.PhotoItemListBinding
 import entities.Photo
 
 class PhotosAdapter(
-    private val photos: List<Photo>,
-    private val layoutManager: GridLayoutManager
+    private val layoutManager: GridLayoutManager,
+    private val onItemClickListener: (view: ImageView, pos: Int) -> Unit,
+    private val onLoadMoreListener: (pos: Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var photos: List<Photo> = listOf()
 
     enum class ViewType {
         LIST,
@@ -31,8 +33,8 @@ class PhotosAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is GridViewHolder -> holder.bind(photos[position])
-            is ListViewHolder -> holder.bind(photos[position])
+            is GridViewHolder -> holder.bind(photos[holder.layoutPosition])
+            is ListViewHolder -> holder.bind(photos[holder.layoutPosition])
         }
     }
 
@@ -43,9 +45,18 @@ class PhotosAdapter(
         else ViewType.LIST.ordinal
     }
 
+    fun addItems(photoItems: List<Photo>) {
+        photos = photoItems
+        notifyDataSetChanged()
+    }
+
     inner class GridViewHolder(val binding: PhotoItemGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Photo) {
+            this.binding.root.setOnClickListener {
+                onItemClickListener.invoke(binding.photoItemImageView, layoutPosition)
+            }
+            onLoadMoreListener(adapterPosition)
             binding.photo = item
             binding.executePendingBindings()
         }
@@ -54,6 +65,10 @@ class PhotosAdapter(
     inner class ListViewHolder(val binding: PhotoItemListBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Photo) {
+            this.binding.root.setOnClickListener {
+                onItemClickListener.invoke(binding.photoItemImageView, layoutPosition)
+            }
+            onLoadMoreListener(adapterPosition)
             binding.photo = item
             binding.executePendingBindings()
         }

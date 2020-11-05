@@ -1,3 +1,4 @@
 <resources>
     <string name="image_browser_title">Image Browser</string>
+    <string name="image_view_transition">transitionalImage</string>
 </resources>

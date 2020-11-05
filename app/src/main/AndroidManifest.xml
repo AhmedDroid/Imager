@@ -17,6 +17,7 @@
             android:name="com.ahmedroid.ui.viewer.ImageViewerActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:theme="@style/ImageBrowserStyle"
             android:name="com.ahmedroid.ui.main.ImageBrowserActivity"
             android:label="@string/image_browser_title"
             android:screenOrientation="portrait">

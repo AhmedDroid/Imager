@@ -1,14 +1,14 @@
 package com.ahmedroid.ui.main
 
+import android.app.ActivityOptions
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ahmedroid.ui.R
+import com.ahmedroid.ui.viewer.ImageViewerActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import entities.Photo
@@ -49,6 +49,24 @@ class ImageBrowserActivity : AppCompatActivity() {
             }
             photosAdapter?.notifyItemRangeChanged(0, photosAdapter?.itemCount ?: 0)
         }
+
+        photosAdapter = PhotosAdapter(activity_image_browser_recyclerView.layoutManager as GridLayoutManager, { view,
+                                                                                                                pos ->
+            val intent = Intent(this, ImageViewerActivity::class.java)
+            intent.putExtra(
+                ImageViewerActivity.EXTRA_FULL_IMAGE_URL,
+                imageBrowserViewModel.photosList[pos].urls?.fullPhotoUrl
+            )
+
+            val options = ActivityOptions
+                .makeSceneTransitionAnimation(this, view, getString(R.string.image_view_transition))
+
+            startActivity(intent, options.toBundle())
+        }, {
+            if (it >= imageBrowserViewModel.photosList.size / 2) {
+//                imageBrowserViewModel.loadPhotos()
+            }
+        })
     }
 
     private fun loadPhotos() {
@@ -78,8 +96,7 @@ class ImageBrowserActivity : AppCompatActivity() {
     }
 
     private fun showPhotos(photos: List<Photo>) {
-        photosAdapter = PhotosAdapter(photos, activity_image_browser_recyclerView.layoutManager as GridLayoutManager)
+        photosAdapter?.addItems(photos)
         activity_image_browser_recyclerView.adapter = photosAdapter
-
     }
 }
